@@ -4,6 +4,7 @@ import datetime
 import json
 import multiprocessing as mp
 import os
+from urllib.parse import urlparse
 from typing import List, Optional
 
 import pandas as pd
