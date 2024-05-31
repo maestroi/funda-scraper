@@ -135,6 +135,19 @@ class FundaScraper(object):
         if days_since is not None:
             self.days_since = days_since
 
+    def fix_link(self, link:str) -> str:
+        link_url = urlparse(link)
+        link_path = link_url.path.split("/")
+        property_id = link_path.pop(5)
+        property_address =  link_path.pop(4).split("-")
+        link_path = link_path[2:4]
+        property_address.insert(1, property_id)
+        link_path.extend(["-".join(property_address), "?old_ldp=true"])
+
+        return urlunparse((link_url.scheme, link_url.netloc, "/".join(link_path),'','',''))
+
+
+
     def fetch_all_links(self, page_start: int = None, n_pages: int = None) -> None:
         """Find all the available links across multiple pages."""
 
@@ -157,6 +170,8 @@ class FundaScraper(object):
                 break
 
         urls = list(set(urls))
+        urls = [self.fix_link(url) for url in urls]
+        
         logger.info(
             f"*** Got all the urls. {len(urls)} houses found from {self.page_start} to {self.page_end} ***"
         )
